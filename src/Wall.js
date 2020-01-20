@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class Bird extends Component {
+class Wall extends Component {
     render() {
         const width = this.props.size[0];
         const height = this.props.size[1];
@@ -24,4 +24,4 @@ class Bird extends Component {
     }
 }
 
-export default Bird;
+export default Wall;
