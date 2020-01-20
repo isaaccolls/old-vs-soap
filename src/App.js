@@ -5,6 +5,7 @@ import Constants from './Constants';
 import { GameEngine } from 'react-game-engine';
 import Matter from 'matter-js';
 import Bird from './Bird';
+import Physics from './Physics';
 
 class App extends Component {
 
@@ -22,7 +23,7 @@ class App extends Component {
     Matter.World.add(world, [bird]);
 
     return {
-      pyshics: { engine: engine, world: world },
+      physics: { engine: engine, world: world },
       bird: { body: bird, size: [50, 50], color: 'purple', renderer: Bird },
     }
   }
@@ -32,8 +33,9 @@ class App extends Component {
       <div className="App">
           <p>IC</p>
           <GameEngine
-            ref={(ref) => {this.gameEngine = ref; }}
+            ref={(ref) => { this.gameEngine = ref; }}
             style={styles.gameContainer}
+            systems={[Physics]}
             entities={this.entities}
           />
       </div>
