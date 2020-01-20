@@ -31,6 +31,10 @@ class App extends Component {
     super(props);
     this.gameEngine = null;
     this.entities = this.setupWorld();
+
+    this.state = {
+      running: true,
+    }
   }
 
   setupWorld = () => {
@@ -44,14 +48,18 @@ class App extends Component {
     let [pipe1Height, pipe2Height] = generatePipes();
     let pipe1 = Matter.Bodies.rectangle(Constants.MAX_WIDTH - (Constants.PIPE_WIDTH / 2), pipe1Height / 2, Constants.PIPE_WIDTH, pipe1Height, { isStatic: true });
     let pipe2 = Matter.Bodies.rectangle(Constants.MAX_WIDTH - (Constants.PIPE_WIDTH / 2), Constants.MAX_HEIGHT - (pipe2Height / 2), Constants.PIPE_WIDTH, pipe2Height, { isStatic: true });
-
     let [pipe3Height, pipe4Height] = generatePipes();
     let pipe3 = Matter.Bodies.rectangle(Constants.MAX_WIDTH * 2 - (Constants.PIPE_WIDTH / 2), pipe3Height / 2, Constants.PIPE_WIDTH, pipe3Height, { isStatic: true });
     let pipe4 = Matter.Bodies.rectangle(Constants.MAX_WIDTH * 2 - (Constants.PIPE_WIDTH / 2), Constants.MAX_HEIGHT - (pipe4Height / 2), Constants.PIPE_WIDTH, pipe4Height, { isStatic: true });
 
-
-
     Matter.World.add(world, [bird, floor, ceiling, pipe1, pipe2, pipe3, pipe4]);
+
+    Matter.Events.on(engine, "collisionStart", (event) => {
+      // let pairs = event.pairs;
+      console.log("collision detected!!");
+
+      this.gameEngine.dispatch({ type: "game-over"});
+    });
 
     return {
       physics: { engine: engine, world: world },
@@ -65,15 +73,41 @@ class App extends Component {
     }
   }
 
+  onEvent = (e) => {
+    if (e.type === "game-over") {
+      this.setState({
+        running: false,
+      });
+    }
+  }
+
+  reset = () => {
+    this.gameEngine.swap(this.setupWorld());
+    this.setState({
+      running: true,
+    });
+  }
+
   render() {
     return (
-      <div className="App">
+      <div className="App" style={styles.container}>
           <GameEngine
             ref={(ref) => { this.gameEngine = ref; }}
             style={styles.gameContainer}
             systems={[Physics]}
+            onEvent={this.onEvent}
+            running={this.state.running}
             entities={this.entities}
-          />
+          >
+          </GameEngine>
+          {
+            !this.state.running &&
+              <div style={styles.fullScreen}>
+                <div style={styles.gameOverText}>
+                  <button onClick={this.reset} style={styles.fullScreenButton}>Dale otra!</button>
+                </div>
+              </div>
+          }
       </div>
     );
   }
@@ -81,12 +115,46 @@ class App extends Component {
 }
 
 const styles = {
-  gameContainer: {
+  container: {
     flex: 1,
-    width: 800,
-    height: 600,
+    background: '#ffffff',
+  },
+  gameContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    // flex: 1,
+    // width: 800,
+    // height: 600,
     backgroundColor: 'lightblue',
-  }
+  },
+  gameOverText: {
+    color: 'white',
+    fontSize: 24,
+  },
+  fullScreen: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    background: 'black',
+    opacity: 0.7,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullScreenButton: {
+    // position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flex: 1,
+    marginTop: Constants.MAX_HEIGHT / 2,
+    marginLeft: Constants.MAX_WIDTH * 0.5,
+  },
 }
 
 export default App;
