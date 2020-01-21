@@ -5,27 +5,9 @@ import Constants from './Constants';
 import { GameEngine } from 'react-game-engine';
 import Matter from 'matter-js';
 import Bird from './Bird';
-import Wall from './Wall';
 import Floor from './Floor';
 import Physics from './Physics';
 import Images from './assets/Images';
-
-export const randomBetween = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-export const generatePipes = () => {
-  let topPipeHeight = randomBetween(100, (Constants.MAX_HEIGHT / 2) - 100);
-  let bottomPipe = Constants.MAX_HEIGHT - topPipeHeight - Constants.GAP_ZISE;
-
-  let sizes = [topPipeHeight, bottomPipe];
-  
-  if (Math.random() < 0.5) {
-    sizes = sizes.reverse();
-  }
-
-  return sizes;
-}
 
 class App extends Component {
 
