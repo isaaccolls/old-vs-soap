@@ -6,10 +6,21 @@ let pose = 1;
 
 const Physics = (entities, { input, time }) => {
     let engine = entities.physics.engine;
+    let world = entities.physics.world;
     let bird = entities.bird.body;
 
+    let hadTouches = false;
     input.filter(t => t.name === "onClick").forEach(t => {
-        Matter.Body.applyForce( bird, bird.position, { x: 0.00, y: -0.10 });
+        if (!hadTouches) {
+            if (world.gravity.y === 0.0) {
+                world.gravity.y = 1.2;
+            }
+            hadTouches = true;
+            Matter.Body.setVelocity(bird, {
+                x: bird.velocity.x,
+                y: -10
+            });
+        }
     });
 
     Matter.Engine.update(engine, time.delta);
