@@ -6,7 +6,9 @@ import { GameEngine } from 'react-game-engine';
 import Matter from 'matter-js';
 import Bird from './Bird';
 import Wall from './Wall';
+import Floor from './Floor';
 import Physics from './Physics';
+import Images from './assets/Images';
 
 export const randomBetween = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -40,19 +42,30 @@ class App extends Component {
   setupWorld = () => {
     let engine = Matter.Engine.create({ enableSleeping: false });
     let world = engine.world;
+    world.gravity.y = 0.0;
 
-    let bird = Matter.Bodies.rectangle(Constants.MAX_WIDTH / 4, Constants.MAX_HEIGHT / 2, 50, 50);
-    let floor = Matter.Bodies.rectangle(Constants.MAX_WIDTH / 2, Constants.MAX_HEIGHT - 25, Constants.MAX_WIDTH, 50, { isStatic: true });
-    let ceiling = Matter.Bodies.rectangle(Constants.MAX_WIDTH / 2, 25, Constants.MAX_WIDTH, 50, { isStatic: true });
+    let bird = Matter.Bodies.rectangle(
+      Constants.MAX_WIDTH / 2,
+      Constants.MAX_HEIGHT / 2,
+      Constants.BIRD_WIDTH,
+      Constants.BIRD_HEIGHT
+    );
+    let floor1 = Matter.Bodies.rectangle(
+      Constants.MAX_WIDTH / 2,
+      Constants.MAX_HEIGHT - 25,
+      Constants.MAX_WIDTH,
+      50,
+      { isStatic: true }
+    );
+    let floor2 = Matter.Bodies.rectangle(
+      Constants.MAX_WIDTH + (Constants.MAX_WIDTH / 2),
+      Constants.MAX_HEIGHT - 25,
+      Constants.MAX_WIDTH,
+      50,
+      { isStatic: true }
+    );
 
-    let [pipe1Height, pipe2Height] = generatePipes();
-    let pipe1 = Matter.Bodies.rectangle(Constants.MAX_WIDTH - (Constants.PIPE_WIDTH / 2), pipe1Height / 2, Constants.PIPE_WIDTH, pipe1Height, { isStatic: true });
-    let pipe2 = Matter.Bodies.rectangle(Constants.MAX_WIDTH - (Constants.PIPE_WIDTH / 2), Constants.MAX_HEIGHT - (pipe2Height / 2), Constants.PIPE_WIDTH, pipe2Height, { isStatic: true });
-    let [pipe3Height, pipe4Height] = generatePipes();
-    let pipe3 = Matter.Bodies.rectangle(Constants.MAX_WIDTH * 2 - (Constants.PIPE_WIDTH / 2), pipe3Height / 2, Constants.PIPE_WIDTH, pipe3Height, { isStatic: true });
-    let pipe4 = Matter.Bodies.rectangle(Constants.MAX_WIDTH * 2 - (Constants.PIPE_WIDTH / 2), Constants.MAX_HEIGHT - (pipe4Height / 2), Constants.PIPE_WIDTH, pipe4Height, { isStatic: true });
-
-    Matter.World.add(world, [bird, floor, ceiling, pipe1, pipe2, pipe3, pipe4]);
+    Matter.World.add(world, [bird, floor1, floor2]);
 
     Matter.Events.on(engine, "collisionStart", (event) => {
       // let pairs = event.pairs;
@@ -63,13 +76,9 @@ class App extends Component {
 
     return {
       physics: { engine: engine, world: world },
-      bird: { body: bird, size: [50, 50], color: 'purple', renderer: Bird },
-      floor: { body: floor, size: [Constants.MAX_WIDTH, 50], color: 'green', renderer: Wall },
-      ceiling: { body: ceiling, size: [Constants.MAX_WIDTH, 50], color: 'green', renderer: Wall},
-      pipe1: { body: pipe1, size: [Constants.PIPE_WIDTH, pipe1Height], color: 'yellow', renderer: Wall},
-      pipe2: { body: pipe2, size: [Constants.PIPE_WIDTH, pipe2Height], color: 'yellow', renderer: Wall},
-      pipe3: { body: pipe3, size: [Constants.PIPE_WIDTH, pipe3Height], color: 'yellow', renderer: Wall},
-      pipe4: { body: pipe4, size: [Constants.PIPE_WIDTH, pipe4Height], color: 'yellow', renderer: Wall},
+      floor1: { body: floor1, renderer: Floor },
+      floor2: { body: floor2, renderer: Floor },
+      bird: { body: bird, pose: 1, renderer: Bird },
     }
   }
 
@@ -91,23 +100,24 @@ class App extends Component {
   render() {
     return (
       <div className="App" style={styles.container}>
-          <GameEngine
-            ref={(ref) => { this.gameEngine = ref; }}
-            style={styles.gameContainer}
-            systems={[Physics]}
-            onEvent={this.onEvent}
-            running={this.state.running}
-            entities={this.entities}
-          >
-          </GameEngine>
-          {
-            !this.state.running &&
-              <div style={styles.fullScreen}>
-                <div style={styles.gameOverText}>
-                  <button onClick={this.reset} style={styles.fullScreenButton}>Dale otra!</button>
-                </div>
+        <img src={Images.background} style={styles.backgroundImage} alt='background' />
+        <GameEngine
+          ref={(ref) => { this.gameEngine = ref; }}
+          style={styles.gameContainer}
+          systems={[Physics]}
+          onEvent={this.onEvent}
+          running={this.state.running}
+          entities={this.entities}
+        >
+        </GameEngine>
+        {
+          !this.state.running &&
+            <div style={styles.fullScreen}>
+              <div style={styles.gameOverText}>
+                <button onClick={this.reset} style={styles.fullScreenButton}>Dale otra!</button>
               </div>
-          }
+            </div>
+        }
       </div>
     );
   }
@@ -119,6 +129,15 @@ const styles = {
     flex: 1,
     background: '#ffffff',
   },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: Constants.MAX_WIDTH,
+    height: Constants.MAX_HEIGHT,
+  },
   gameContainer: {
     position: 'absolute',
     top: 0,
@@ -128,7 +147,7 @@ const styles = {
     // flex: 1,
     // width: 800,
     // height: 600,
-    backgroundColor: 'lightblue',
+    // backgroundColor: 'lightblue',
   },
   gameOverText: {
     color: 'white',

@@ -5,6 +5,8 @@ const Constants = {
     MAX_HEIGHT: height,
     GAP_ZISE: 200,
     PIPE_WIDTH: 100,
+    BIRD_WIDTH: 50,
+    BIRD_HEIGHT: 41,
 }
 
 export default Constants;
