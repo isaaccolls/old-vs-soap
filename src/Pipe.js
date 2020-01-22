@@ -21,13 +21,13 @@ class Pipe extends Component {
                     width: width,
                     height: height,
                     overflow: 'hidden',
-                    flexDirection: 'colum',
+                    flexDirection: 'column',
                 }}>
                 {Array.apply(null, Array(pipeIterations)).map((el, idx) => {
                     return <img style={{ width: width, height: pipeHeight }} key={idx} src={Images.pipeCore} alt="pipe core" />;
                 })}
             </div>
-        )
+        );
     }
 }
 

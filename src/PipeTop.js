@@ -18,7 +18,7 @@ class PipeTop extends Component {
                     height: height,
                 }}
                 src={Images.pipeTop}
-                alt='bird'
+                alt='Pipe Top'
             />
         )
     }

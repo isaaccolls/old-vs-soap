@@ -10,23 +10,23 @@ class Floor extends Component {
 
         const imageIterations = Math.ceil(width / height);
 
-        var divStyle = {
-            position: 'absolute',
-            top: y,
-            left: x,
-            width: width,
-            height: height,
-            overflow: 'hidden',
-            flexDirection: 'row',
-        };
-
         return (
-            <div style={divStyle}>
+            <div
+                style={{
+                    position: 'absolute',
+                    top: y,
+                    left: x,
+                    width: width,
+                    height: height,
+                    overflow: 'hidden',
+                    flexDirection: 'row',
+                }}
+            >
                 {Array.apply(null, Array(imageIterations)).map((el, idx) => {
                     return <img style={{ width: height, height: height }} key={idx} src={Images.floor} alt="this is the floor" />;
                 })}
             </div>
-        )
+        );
     }
 }
 

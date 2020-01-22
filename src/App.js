@@ -35,14 +35,14 @@ class App extends Component {
     let floor1 = Matter.Bodies.rectangle(
       Constants.MAX_WIDTH / 2,
       Constants.MAX_HEIGHT - 25,
-      Constants.MAX_WIDTH,
+      Constants.MAX_WIDTH + 4,
       50,
       { isStatic: true }
     );
     let floor2 = Matter.Bodies.rectangle(
       Constants.MAX_WIDTH + (Constants.MAX_WIDTH / 2),
       Constants.MAX_HEIGHT - 25,
-      Constants.MAX_WIDTH,
+      Constants.MAX_WIDTH + 4,
       50,
       { isStatic: true }
     );
@@ -109,7 +109,7 @@ class App extends Component {
 const styles = {
   container: {
     flex: 1,
-    background: '#ffffff',
+    backgroundColor: '#ffffff',
   },
   backgroundImage: {
     position: 'absolute',
@@ -126,10 +126,6 @@ const styles = {
     bottom: 0,
     left: 0,
     right: 0,
-    // flex: 1,
-    // width: 800,
-    // height: 600,
-    // backgroundColor: 'lightblue',
   },
   gameOverText: {
     color: 'white',
