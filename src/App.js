@@ -6,7 +6,7 @@ import { GameEngine } from 'react-game-engine';
 import Matter from 'matter-js';
 import Bird from './Bird';
 import Floor from './Floor';
-import Physics from './Physics';
+import Physics, { resetPipes } from './Physics';
 import Images from './assets/Images';
 
 class App extends Component {
@@ -18,6 +18,7 @@ class App extends Component {
 
     this.state = {
       running: true,
+      score: 0,
     }
   }
 
@@ -69,13 +70,19 @@ class App extends Component {
       this.setState({
         running: false,
       });
+    } else if (e.type === "score") {
+      this.setState({
+        score: this.state.score + 1,
+      });
     }
   }
 
   reset = () => {
+    resetPipes();
     this.gameEngine.swap(this.setupWorld());
     this.setState({
       running: true,
+      score: 0,
     });
   }
 
@@ -92,11 +99,13 @@ class App extends Component {
           entities={this.entities}
         >
         </GameEngine>
+        <h1 style={styles.score}>{this.state.score}</h1>
         {
           !this.state.running &&
             <div style={styles.fullScreen}>
               <div style={styles.gameOverText}>
                 <button onClick={this.reset} style={styles.fullScreenButton}>Dale otra!</button>
+                <p style={styles.gameOverSubText}>Try again</p>
               </div>
             </div>
         }
@@ -130,6 +139,20 @@ const styles = {
   gameOverText: {
     color: 'white',
     fontSize: 24,
+    fontFamily: 'FB',
+  },
+  gameOverSubText: {
+    position: 'absolute',
+    color: 'white',
+    fontSize: 22,
+    fontFamily: 'FB',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flex: 1,
+    marginTop: Constants.MAX_HEIGHT / 2 + 60,
+    marginLeft: Constants.MAX_WIDTH * 0.5,
   },
   fullScreen: {
     position: 'absolute',
@@ -151,6 +174,19 @@ const styles = {
     flex: 1,
     marginTop: Constants.MAX_HEIGHT / 2,
     marginLeft: Constants.MAX_WIDTH * 0.5,
+    fontSize: 32,
+    fontFamily: 'FB',
+  },
+  score: {
+    position: 'absolute',
+    color: 'white',
+    fontSize: 72,
+    top: 50,
+    left: Constants.MAX_WIDTH / 2 - 20,
+    textShadowColor: '#444444',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 2,
+    fontFamily: 'FB',
   },
 }
 

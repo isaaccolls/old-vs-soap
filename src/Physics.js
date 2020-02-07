@@ -11,6 +11,10 @@ export const randomBetween = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+export const resetPipes = () => {
+    pipes = 0;
+};
+
 export const generatePipes = () => {
   let topPipeHeight = randomBetween(100, (Constants.MAX_HEIGHT / 2) - 100);
   let bottomPipeHeight = Constants.MAX_HEIGHT - topPipeHeight - Constants.GAP_SIZE;
@@ -65,21 +69,21 @@ export const addPipesAtLocation = (x, world, entities) => {
     Matter.World.add(world, [pipe1, pipe1Top, pipe2, pipe2Top]);
 
     entities["pipe" + (pipes + 1)] = {
-        body: pipe1, renderer: Pipe
+        body: pipe1, renderer: Pipe, scored: false
     }
     entities["pipe" + (pipes + 2)] = {
-        body: pipe2, renderer: Pipe
+        body: pipe2, renderer: Pipe, scored: false
     }
     entities["pipe" + (pipes + 1) + "Top"] = {
-        body: pipe1Top, renderer: PipeTop
+        body: pipe1Top, renderer: PipeTop, scored: false
     }
     entities["pipe" + (pipes + 2) + "Top"] = {
-        body: pipe2Top, renderer: PipeTop
+        body: pipe2Top, renderer: PipeTop, scored: false
     }
     pipes += 2;
 }
 
-const Physics = (entities, { input, time }) => {
+const Physics = (entities, { input, time, dispatch }) => {
     let engine = entities.physics.engine;
     let world = entities.physics.world;
     let bird = entities.bird.body;
@@ -103,9 +107,14 @@ const Physics = (entities, { input, time }) => {
     Matter.Engine.update(engine, time.delta);
 
     Object.keys(entities).forEach(key => {
-        if (key.indexOf("pipe") === 0) {
+        if (key.indexOf("pipe") === 0 && entities.hasOwnProperty(key)) {
             Matter.Body.translate(entities[key].body, {x: -2, y: 0});
             if (key.indexOf("Top") !== -1 && parseInt(key.replace("pipe", "")) % 2 === 0) {
+                if (entities[key].body.position.x <= bird.position.x && !entities[key].scored) {
+                    entities[key].scored = true;
+                    dispatch({ type: "score" });
+                }
+
                 if (entities[key].body.position.x <= -1 * (Constants.PIPE_WIDTH / 2)) {
                     let pipeIndex = parseInt(key.replace("pipe", ""));
                     delete(entities["pipe" + (pipeIndex - 1) + "Top"]);
